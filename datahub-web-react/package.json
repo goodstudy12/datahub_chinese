@@ -108,13 +108,13 @@
     "scripts": {
         "analyze": "source-map-explorer 'dist/assets/*.js'",
         "start": "yarn run generate && vite",
-        "ec2-dev": "yarn run generate && CI=true vite",
-        "build": "yarn run generate && CI=false NODE_OPTIONS='--max-old-space-size=5120 --openssl-legacy-provider' vite build",
-        "buildWithSourceMap": "yarn run generate && CI=false NODE_OPTIONS='--max-old-space-size=8192 --openssl-legacy-provider' vite build --sourcemap",
+        "ec2-dev": "yarn run generate && cross-env CI=true vite",
+        "build": "yarn run generate && cross-env CI=false NODE_OPTIONS=--max-old-space-size=5120 vite build",
+        "buildWithSourceMap": "yarn run generate && cross-env CI=false NODE_OPTIONS=--max-old-space-size=8192 vite build --sourcemap",
         "preview": "vite preview",
-        "test": "NODE_OPTIONS='--max-old-space-size=5120' vitest",
+        "test": "cross-env NODE_OPTIONS=--max-old-space-size=5120 vitest",
         "test-coverage": "yarn test run --coverage",
-        "generate": "NODE_OPTIONS='--max-old-space-size=5120 --openssl-legacy-provider' graphql-codegen --config codegen.yml",
+        "generate": "cross-env NODE_OPTIONS=--max-old-space-size=5120 graphql-codegen --config codegen.yml && prettier --write \"src/**/*.generated.ts\" \"src/types.generated.ts\" \"src/possibleTypes.generated.ts\"",
         "lint": "eslint . --ext .ts,.tsx --quiet && yarn format-check && yarn type-check",
         "lint-fix": "eslint . --ext .ts,.tsx --quiet --fix && yarn format",
         "lint-file": "eslint --ext .ts,.tsx --quiet",
@@ -126,7 +126,7 @@
         "type-check": "tsc --noEmit",
         "type-watch": "tsc -w --noEmit",
         "storybook": "storybook dev -p 6006",
-        "build-storybook": "NODE_OPTIONS='--max-old-space-size=8192 --openssl-legacy-provider' storybook build"
+        "build-storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 storybook build"
     },
     "browserslist": {
         "production": [
@@ -166,6 +166,7 @@
         "@typescript-eslint/parser": "^5.38.1",
         "@vitejs/plugin-react-swc": "^3.10.1",
         "@vitest/coverage-v8": "^3.2.4",
+        "cross-env": "^10.1.0",
         "eslint": "^8.2.0",
         "eslint-config-airbnb": "19.0.4",
         "eslint-config-airbnb-typescript": "^17.0.0",

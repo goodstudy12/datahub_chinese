@@ -54,15 +54,30 @@ export default defineConfig(async ({ mode }) => {
         antThemeConfig = require(themeConfigFile);
     }
 
+    // SSO 认证 Cookie（从 .env 文件的 REACT_APP_AUTH_COOKIE 读取，需要从已登录的浏览器会话中复制）
+    const AUTH_COOKIE = process.env.REACT_APP_AUTH_COOKIE || '';
+
     // common extra logging setup for proxies
     const proxyDebugConfig = (proxy, options) => {
         proxy.on('proxyReq', (proxyReq, req, _res) => {
+            // 注入认证 Cookie
+            proxyReq.setHeader('Cookie', AUTH_COOKIE);
             console.log(`[PROXY] ${req.url} -> ${options.target}${req.url}`);
         });
-        proxy.on('proxyRes', (proxyRes, req, _res) => {
+        proxy.on('proxyRes', (proxyRes, req, res) => {
             console.log(`[PROXY RESPONSE] ${req.url} <- ${proxyRes.statusCode} ${proxyRes.statusMessage}`);
             if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400) {
                 console.log(`[PROXY REDIRECT] Location: ${proxyRes.headers.location}`);
+            }
+            // 重写 Set-Cookie 头中的域名，使其在 localhost 上生效
+            const setCookie = proxyRes.headers['set-cookie'];
+            if (setCookie) {
+                proxyRes.headers['set-cookie'] = setCookie.map(cookie => {
+                    return cookie
+                        .replace(/Domain=[^;]+;?/gi, '')
+                        .replace(/Secure;?/gi, '')
+                        .replace(/SameSite=None;?/gi, 'SameSite=Lax;');
+                });
             }
         });
         proxy.on('error', (err, req, _res) => {
@@ -75,6 +90,7 @@ export default defineConfig(async ({ mode }) => {
         target: process.env.REACT_APP_PROXY_TARGET || 'http://localhost:9002',
         changeOrigin: true,
         configure: proxyDebugConfig,
+        cookieDomainRewrite: 'localhost',
     };
 
     const proxyOptions = {
@@ -188,9 +204,9 @@ export default defineConfig(async ({ mode }) => {
         resolve: {
             alias: {
                 // Root Directories
-                '@src': path.resolve(__dirname, '/src'),
-                '@app': path.resolve(__dirname, '/src/app'),
-                '@conf': path.resolve(__dirname, '/src/conf'),
+                '@src': path.resolve(__dirname, 'src'),
+                '@app': path.resolve(__dirname, 'src/app'),
+                '@conf': path.resolve(__dirname, 'src/conf'),
                 '@components': path.resolve(__dirname, 'src/alchemy-components'),
                 '@graphql': path.resolve(__dirname, 'src/graphql'),
                 '@graphql-mock': path.resolve(__dirname, 'src/graphql-mock'),
