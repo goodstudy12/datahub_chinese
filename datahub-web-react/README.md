@@ -2,182 +2,157 @@
 title: 'datahub-web-react'
 ---
 
-# DataHub React App
+# DataHub React 应用
 
-## About
+## 关于
 
-This module contains a React application that serves as the DataHub UI.
+此模块包含一个作为 DataHub UI 的 React 应用程序。
 
-Feel free to take a look around, deploy, and contribute.
+欢迎随时查看、部署和贡献。
 
-## Functional Goals
+## 功能目标
 
-The initial milestone for the app was to achieve functional parity with the previous Ember app. This meant supporting
+应用程序的初始里程碑是实现与之前 Ember 应用的功能对等。这意味着支持：
 
-- Dataset Profiles, Search, Browse Experience
-- User Profiles, Search
-- LDAP Authentication Flow
+- 数据集配置、搜索、浏览体验
+- 用户配置、搜索
+- LDAP 认证流程
 
-This has since been achieved. The new set of functional goals are reflected in the latest version of the [DataHub Roadmap](../docs/roadmap.md).
+目前已经实现。新的功能目标反映在最新版本的 [DataHub 路线图](../docs/roadmap.md) 中。
 
-## Design Goals
+## 设计目标
 
-In building out the client experience, we intend to leverage learnings from the previous Ember-based app and incorporate feedback gathered
-from organizations operating DataHub. Two themes have emerged to serve as guideposts:
+在构建客户端体验时，我们打算利用从之前基于 Ember 的应用程序中获得的经验，并结合从运营 DataHub 的组织收集的反馈。两个主题已成为指导方针：
 
-1. **Configurability**: The client experience should be configurable, such that deploying organizations can tailor certain
-   aspects to their needs. This includes theme / styling configurability, showing and hiding specific functionality,
-   customizing copy & logos, etc.
-2. **Extensibility**: Extending the _functionality_ of DataHub should be as simple as possible. Making changes like
-   extending an existing entity & adding a new entity should require minimal effort and should be well covered in detailed
-   documentation.
+1. **可配置性**：客户端体验应该是可配置的，以便部署组织可以根据其需求定制某些方面。这包括主题/样式可配置性、显示和隐藏特定功能、自定义文案和徽标等。
+2. **可扩展性**：扩展 DataHub 的_功能_应该尽可能简单。像扩展现有实体和添加新实体这样的更改应该需要最少的工作量，并且应该在详细文档中有很好的覆盖。
 
-## Starting the Application
+## 启动应用程序
 
-### Quick Start
+### 快速开始
 
-Follow the instructions [here](https://docs.datahub.com/docs/developers#building-the-project) to build and deploy your project locally. The initial build might take a while. You will be able to navigate to the application at `http://localhost:9002`.
+按照[此处](https://docs.datahub.com/docs/developers#building-the-project)的说明在本地构建和部署项目。初始构建可能需要一些时间。您将能够在 `http://localhost:9002` 访问应用程序。
 
-If you want to make changes to the UI see them live without having to rebuild the `datahub-frontend-react` docker image, you
-can run the following in this directory:
+如果您想对 UI 进行更改并实时查看它们，而无需重新构建 `datahub-frontend-react` docker 镜像，您可以在此目录中运行：
 
 `yarn install && yarn run start`
 
-which will start a forwarding server at `localhost:3000`. Note that to fetch real data, `datahub-frontend` server will also
-need to be deployed, still at `http://localhost:9002`, to service GraphQL API requests.
+这将在 `localhost:3000` 启动一个转发服务器。请注意，要获取真实数据，`datahub-frontend` 服务器仍然需要部署在 `http://localhost:9002`，以处理 GraphQL API 请求。
 
-Optionally you could also start the app with the mock server without running the docker containers by executing `yarn start:mock`. See [here](src/graphql-mock/fixtures/searchResult/userSearchResult.ts#L6) for available login users.
+您也可以选择在不运行 docker 容器的情况下使用模拟服务器启动应用程序，执行 `yarn start:mock`。可用的登录用户请参见[此处](src/graphql-mock/fixtures/searchResult/userSearchResult.ts#L6)。
 
-### Testing your customizations
+### 测试您的自定义
 
-There is two options to test your customizations:
+有两种方法可以测试您的自定义：
 
-- **Option 1**: Initialize the docker containers with the `quickstart.sh` script (or if any custom docker-compose file) and then run `yarn start` in this directory. This will start a forwarding server at `localhost:3000` that will use the `datahub-frontend` server at `http://localhost:9002` to fetch real data.
-- **Option 2**: Change the environment variable `REACT_APP_PROXY_TARGET` in the `.env` file to point to your `datahub-frontend` server (ex: https://my_datahub_host.com) and then run `yarn start` in this directory. This will start a forwarding server at `localhost:3000` that will use the `datahub-frontend` server at some domain to fetch real data.
+- **选项 1**：使用 `quickstart.sh` 脚本（或任何自定义 docker-compose 文件）初始化 docker 容器，然后在此目录中运行 `yarn start`。这将在 `localhost:3000` 启动一个转发服务器，使用 `http://localhost:9002` 的 `datahub-frontend` 服务器获取真实数据。
+- **选项 2**：将 `.env` 文件中的环境变量 `REACT_APP_PROXY_TARGET` 更改为指向您的 `datahub-frontend` 服务器（例如：https://my_datahub_host.com），然后在此目录中运行 `yarn start`。这将在 `localhost:3000` 启动一个转发服务器，使用某个域的 `datahub-frontend` 服务器获取真实数据。
 
-The option 2 is useful if you want to test your React customizations without having to run the hole DataHub stack locally. However, if you changed other components of the DataHub stack, you will need to run the hole stack locally (building the docker images) and use the option 1.
+如果您想在不必在本地运行整个 DataHub 堆栈的情况下测试 React 自定义，选项 2 非常有用。但是，如果您更改了 DataHub 堆栈的其他组件，则需要在本地运行整个堆栈（构建 docker 镜像）并使用选项 1。
 
-### Functional testing
+### 功能测试
 
-In order to start a server and run frontend unit tests using react-testing-framework, run:
+要启动服务器并使用 react-testing-framework 运行前端单元测试，请运行：
 
 `yarn test :e2e`
 
-There are also more automated tests using Cypress in the `smoke-test` folder of the repository root.
+在仓库根目录的 `smoke-test` 文件夹中还有更多使用 Cypress 的自动化测试。
 
-#### Troubleshooting
+#### 故障排除
 
-`Error: error:0308010C:digital envelope routines::unsupported`: This error message shows up when using Node 17, due to an OpenSSL update related to md5.  
-The best workaround is to revert to the Active LTS version of Node, 16.13.0 with the command `nvm install 16.13.0` and if necessary reinstall yarn `npm install --global yarn`.
+`Error: error:0308010C:digital envelope routines::unsupported`：由于与 md5 相关的 OpenSSL 更新，使用 Node 17 时会出现此错误消息。
+最佳解决方法是使用命令 `nvm install 16.13.0` 恢复到 Node 的活跃 LTS 版本 16.13.0，如有必要，重新安装 yarn `npm install --global yarn`。
 
-### Theming
+### 主题设置
 
-#### Customizing your App without rebuilding assets
+#### 无需重建资源即可自定义应用程序
 
-To see the results of any change to a theme, you will need to rebuild your datahub-frontend-react container. While this may work for some users, if you don't want to rebuild your container
-you can change two things without rebuilding.
+要查看主题更改的结果，您需要重建 datahub-frontend-react 容器。虽然这对某些用户可能有效，但如果您不想重建容器，可以在不重建的情况下更改两项内容：
 
-1. You customize the logo on the homepage & the search bar header by setting the `REACT_APP_LOGO_URL` env variable when deploying GMS.
-2. You can customize the favicon (the icon on your browser tab) by setting the `REACT_APP_FAVICON_URL` env var when deploying GMS.
+1. 您可以通过在部署 GMS 时设置 `REACT_APP_LOGO_URL` 环境变量来自定义主页和搜索栏标题上的徽标。
+2. 您可以通过在部署 GMS 时设置 `REACT_APP_FAVICON_URL` 环境变量来自定义 favicon（浏览器标签上的图标）。
 
-#### Selecting a theme
+#### 选择主题
 
-Theme configurations are defined in `./src/conf/theme/themes.ts`. By default, the theme is chosen based on the `REACT_APP_CUSTOM_THEME_ID` env variable in GMS. If no theme is specified, the default themes `themeV2` or `themeV1` are used based on whether the V2 UI is enabled, which is controlled by environment variables `THEME_V2_ENABLED`, `THEME_V2_DEFAULT`, and `THEME_V2_TOGGLEABLE` in GMS. See `metadata-service/configuration/src/main/resources/application.yaml` for more details.
+主题配置在 `./src/conf/theme/themes.ts` 中定义。默认情况下，主题根据 GMS 中的 `REACT_APP_CUSTOM_THEME_ID` 环境变量选择。如果未指定主题，则根据是否启用 V2 UI 使用默认主题 `themeV2` 或 `themeV1`，这由 GMS 中的环境变量 `THEME_V2_ENABLED`、`THEME_V2_DEFAULT` 和 `THEME_V2_TOGGLEABLE` 控制。详情请参见 `metadata-service/configuration/src/main/resources/application.yaml`。
 
-For quick local development, you can set env variable `REACT_APP_THEME` in `.env` to any of the themes defined in `themes.ts`.
+对于快速本地开发，您可以在 `.env` 中将环境变量 `REACT_APP_THEME` 设置为 `themes.ts` 中定义的任何主题。
 
-We are transitioning away from Ant theming, but still depend on it for some styling. The Ant theme is stored in json files, in `./src/conf/theme`. To select the Ant theme, choose a json file and set env variable `ANT_THEME_CONFIG` in `.env` to the theme's filename, including `.json`, then re-run `yarn start` from `datahub/datahub-web-react`.
+我们正在逐步淘汰 Ant 主题，但某些样式仍然依赖它。Ant 主题存储在 `./src/conf/theme` 中的 json 文件中。要选择 Ant 主题，选择一个 json 文件并在 `.env` 中将环境变量 `ANT_THEME_CONFIG` 设置为主题的文件名（包括 `.json`），然后从 `datahub/datahub-web-react` 重新运行 `yarn start`。
 
-#### Editing a theme
+#### 编辑主题
 
-To edit an existing theme, the recommendation is to clone one of the existing themes into a new file with the name `<your_themes_name>.ts`, then update `themes.ts` by importing your theme and adding it to the `themes` object. You can also create a json theme by creating a new file in `./src/conf/theme` with the name `<your_themes_name>.config.json`. The theme interface is defined in `./src/conf/theme/types.ts` and has four sections:
+要编辑现有主题，建议将现有主题之一克隆到名为 `<your_themes_name>.ts` 的新文件中，然后通过导入您的主题并将其添加到 `themes` 对象来更新 `themes.ts`。您也可以通过在 `./src/conf/theme` 中创建名为 `<your_themes_name>.config.json` 的新文件来创建 json 主题。主题接口在 `./src/conf/theme/types.ts` 中定义，有四个部分：
 
-`colors` configures semantic color tokens.
-These are not yet widely used but will be the primary way to configure colors in the app going forward.
+`colors` 配置语义颜色标记。
+这些尚未广泛使用，但将是未来配置应用程序颜色的主要方式。
 
-`styles` configures overrides for the app's deprecated theming variables and for Ant components.
+`styles` 配置应用程序已弃用的主题变量和 Ant 组件的覆盖。
 
-`assets` configures the logo url.
+`assets` 配置徽标 URL。
 
-`content` specifies customizable text fields.
+`content` 指定可自定义的文本字段。
 
-While developing on your theme, all changes to assets and content are seen immediately in your local app. However, changes to styles require
-you to terminate and re-run `yarn start` to see updated styles.
+在开发主题时，对 assets 和 content 的所有更改会立即在本地应用程序中显示。但是，对 styles 的更改需要您终止并重新运行 `yarn start` 才能看到更新的样式。
 
-## Design Details
+## 设计详情
 
-### Package Organization
+### 包组织
 
-The `src` dir of the app is broken down into the following modules
+应用程序的 `src` 目录分为以下模块：
 
-**conf** - Stores global configuration flags that can be referenced across the app. For example, the number of
-search results shown per page, or the placeholder text in the search bar box. It serves as a location where levels
-for functional configurability should reside.
+**conf** - 存储可在整个应用程序中引用的全局配置标志。例如，每页显示的搜索结果数量，或搜索框中的占位符文本。它作为功能可配置性级别应该存在的位置。
 
-**app** - Contains all important components of the app. It has a few sub-modules:
+**app** - 包含应用程序的所有重要组件。它有几个子模块：
 
-- `auth`: Components used to render the user authentication experience.
-- `browse`: Shared components used to render the 'browse-by-path' experience. The experience is akin to navigating a filesystem hierarchy.
-- `preview`: Shared components used to render Entity 'preview' views. These can appear in search results, browse results,
-  and within entity profile pages.
-- `search`: Shared components used to render the full-text search experience.
-- `shared`: Misc. shared components
-- `entity`: Contains Entity definitions, where entity-specific functionality resides.
-  Configuration is provided by implementing the 'Entity' interface. (See DatasetEntity.tsx for example)
-  There are 2 visual components each entity should supply:
+- `auth`：用于渲染用户认证体验的组件。
+- `browse`：用于渲染"按路径浏览"体验的共享组件。该体验类似于导航文件系统层次结构。
+- `preview`：用于渲染实体"预览"视图的共享组件。这些可以出现在搜索结果、浏览结果和实体配置页面中。
+- `search`：用于渲染全文搜索体验的共享组件。
+- `shared`：杂项共享组件
+- `entity`：包含实体定义，其中存放特定于实体的功能。
+  通过实现"Entity"接口提供配置。（参见 DatasetEntity.tsx 示例）
+  每个实体应提供 2 个可视化组件：
 
-    - `profiles`: display relevant details about an individual entity. This serves as the entity's 'profile'.
-    - `previews`: provide a 'preview', or a smaller details card, containing the most important information about an entity instance.
+    - `profiles`：显示有关单个实体的相关详细信息。这作为实体的"配置文件"。
+    - `previews`：提供"预览"或较小的详细信息卡，包含有关实体实例的最重要信息。
 
-        When rendering a preview, the entity's data and the type of preview (SEARCH, BROWSE, PREVIEW) are provided. This
-        allows you to optionally customize the way an entities preview is rendered in different views.
+        在渲染预览时，提供实体的数据和预览类型（SEARCH、BROWSE、PREVIEW）。这允许您可选地自定义实体预览在不同视图中的渲染方式。
 
-    - `entity registry`: There's another very important piece of code living within this module: the **EntityRegistry**. This is a layer
-      of abstraction over the intimate details of rendering a particular entity. It is used
-      to render a view associated with a particular entity type (user, dataset, etc.).
+    - `entity registry`：此模块中还有另一个非常重要的代码：**EntityRegistry**。这是对渲染特定实体细节的抽象层。它用于渲染与特定实体类型（用户、数据集等）关联的视图。
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/entity-registry.png"/>
 </p>
 
-**graphql** - The React App talks to the `dathub-frontend` server using GraphQL. This module is where the _queries_ issued
-against the server are defined. Once defined, running `yarn run generate` will code-gen TypeScript objects to make invoking
-these queries extremely easy. An example can be found at the top of `SearchPage.tsx.`
+**graphql** - React 应用程序使用 GraphQL 与 `datahub-frontend` 服务器通信。此模块是定义针对服务器发出的_查询_的地方。定义后，运行 `yarn run generate` 将代码生成 TypeScript 对象，使调用这些查询变得极其简单。示例可以在 `SearchPage.tsx` 顶部找到。
 
-**images** - Images to be displayed within the app. This is where one would place a custom logo image.
+**images** - 要在应用程序中显示的图像。这是放置自定义徽标图像的地方。
 
-## Adding an Entity
+## 添加实体
 
-The following outlines a series of steps required to introduce a new entity into the React app:
+以下概述了在 React 应用程序中引入新实体所需的一系列步骤：
 
-1. Declare the GraphQL Queries required to display the new entity
+1. 声明显示新实体所需的 GraphQL 查询
 
-    - If search functionality should be supported, extend the "search" query within `search.graphql` to fetch the new
-      entity data.
-    - If browse functionality should be supported, extend the "browse" query within `browse.graphql` to fetch the new
-      entity data.
-    - If display a 'profile' should be supported (most often), introduce a new `<entity-name>.graphql` file that contains a
-      `get` query to fetch the entity by primary key (urn).
+    - 如果应支持搜索功能，请扩展 `search.graphql` 中的"search"查询以获取新实体数据。
+    - 如果应支持浏览功能，请扩展 `browse.graphql` 中的"browse"查询以获取新实体数据。
+    - 如果应支持显示"配置文件"（最常见），请引入一个新的 `<entity-name>.graphql` 文件，其中包含一个通过主键（urn）获取实体的 `get` 查询。
 
-    Note that your new entity _must_ implement the `Entity` GraphQL type interface, and thus must have a corresponding
-    `EntityType`.
+    请注意，您的新实体_必须_实现 `Entity` GraphQL 类型接口，因此必须具有相应的 `EntityType`。
 
-2. Implement the `Entity` interface
+2. 实现 `Entity` 接口
 
-    - Create a new folder under `src/components/entity` corresponding to your entity
-    - Create a class that implements the `Entity` interface (example: `DatasetEntity.tsx`)
-    - Provide an implementation each method defined on the interface.
-        - This class specifies whether your new entity should be searchable & browsable, defines the names used to
-          identify your entity when instances are rendered in collection / when entity appears
-          in the URL path, and provides the ability to render your entity given data returned by the GQL API.
+    - 在 `src/components/entity` 下创建一个与您的实体对应的新文件夹
+    - 创建一个实现 `Entity` 接口的类（示例：`DatasetEntity.tsx`）
+    - 为接口上定义的每个方法提供实现。
+        - 此类指定您的新实体是否应该可搜索和可浏览，定义在渲染实例时用于标识您的实体的名称/当实体出现在 URL 路径中时，并提供根据 GQL API 返回的数据渲染您的实体的能力。
 
-3. Register the new entity in the `EntityRegistry`
-    - Update `App.tsx` to register an instance of your new entity. Now your entity will be accessible via the registry
-      and appear in the UI. To manually retrieve the info about your entity or others, simply use an instance
-      of the `EntityRegistry`, which is provided via `ReactContext` to _all_ components in the hierarchy.
-      For example
+3. 在 `EntityRegistry` 中注册新实体
+    - 更新 `App.tsx` 以注册您的新实体的实例。现在您的实体将可通过注册表访问并显示在 UI 中。要手动检索有关您的实体或其他实体的信息，只需使用 `EntityRegistry` 的实例，该实例通过 `ReactContext` 提供给层次结构中的_所有_组件。
+      例如：
         ```
         entityRegistry.getCollectionName(EntityType.YOUR_NEW_ENTITY)
         ```
 
-That's it! For any questions, do not hesitate to reach out on the DataHub Slack community in #datahub-react.
+就是这样！如有任何问题，请随时在 DataHub Slack 社区的 #datahub-react 频道联系我们。
