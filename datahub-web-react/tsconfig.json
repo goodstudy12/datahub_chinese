@@ -26,6 +26,7 @@
             "@conf/*": ["./src/conf/*"],
             "@graphql/*": ["./src/graphql/*"],
             "@graphql-mock/*": ["./src/graphql-mock/*"],
+            "@i18n/*": ["./src/i18n/*"],
             "@images/*": ["./src/images/*"],
             "@providers/*": ["./src/providers/*"],
             "@utils/*": ["./src/utils/*"],

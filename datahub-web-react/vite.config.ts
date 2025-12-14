@@ -210,6 +210,7 @@ export default defineConfig(async ({ mode }) => {
                 '@components': path.resolve(__dirname, 'src/alchemy-components'),
                 '@graphql': path.resolve(__dirname, 'src/graphql'),
                 '@graphql-mock': path.resolve(__dirname, 'src/graphql-mock'),
+                '@i18n': path.resolve(__dirname, 'src/i18n'),
                 '@images': path.resolve(__dirname, 'src/images'),
                 '@providers': path.resolve(__dirname, 'src/providers'),
                 '@utils': path.resolve(__dirname, 'src/utils'),
