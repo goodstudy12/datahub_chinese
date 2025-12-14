@@ -103,7 +103,6 @@
     "Glossary Terms": "术语表",
     "Data Type": "数据类型",
     "Owners": "负责人",
-    "Time": "时间",
     "Run ID": "执行ID",
     "Inputs": "输入",
     "Outputs": "输出",
@@ -356,5 +355,8 @@
     "Platform Instance": "平台实例",
     "Environment": "环境",
     "Glossary Term": "术语",
+    "Applications": "应用",
+    "Context": "文档",
+    "New Document": "新建文档",
     "More": "更多"
 }
