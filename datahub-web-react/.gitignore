@@ -21,6 +21,9 @@
 .vscode
 .eslintcache
 
+# Serena（本地记忆/缓存）
+/.serena/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

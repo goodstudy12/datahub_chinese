@@ -1,154 +1,154 @@
-# Base Path Support in DataHub Frontend
+# DataHub 前端 Base Path 支持
 
-DataHub's React frontend supports runtime base path detection, allowing the same build to be deployed at different URL paths (e.g., `/` or `/datahub/`) without requiring rebuild or reconfiguration.
+DataHub 的 React 前端支持运行时 Base Path（基础路径）检测，使同一份构建产物可以部署在不同的 URL 路径下（例如 `/` 或 `/datahub/`），无需重新构建或重新配置。
 
-## How It Works
+## 工作原理
 
-The base path is determined through a hierarchical detection system:
+Base Path 通过分层的检测机制确定：
 
-1. **Server Template** (Primary): The Play Framework backend injects the base path into the HTML template
-2. **Config Endpoint** (Fallback): Attempts to fetch base path from `/config` or `config` endpoints
-3. **Default** (Last Resort): Falls back to root path `/`
+1. **服务端模板**（优先）：Play Framework 后端将 base path 注入到 HTML 模板中
+2. **配置端点**（回退）：尝试从 `/config` 或 `config` 端点获取 base path
+3. **默认值**（最后手段）：回退到根路径 `/`
 
-## Using Base Paths in Code
+## 在代码中使用 Base Path
 
-### For Asset URLs
+### 资源（Asset）URL
 
-Use the `resolveRuntimePath()` function to resolve any asset path:
+使用 `resolveRuntimePath()` 函数解析任何资源路径：
 
 ```typescript
 import { resolveRuntimePath } from '../utils/runtimeBasePath';
 
-// Resolve asset paths
+// 解析资源路径
 const logoUrl = resolveRuntimePath('/assets/logo.png');
 const apiUrl = resolveRuntimePath('/api/graphql');
 
-// Use in components
+// 在组件中使用
 <img src={resolveRuntimePath('/assets/icons/favicon.ico')} alt="DataHub" />
 ```
 
-### For Navigation Links
+### 导航链接
 
-Use React Router's relative paths or resolve absolute paths:
+使用 React Router 的相对路径，或在需要时解析绝对路径：
 
 ```typescript
 import { resolveRuntimePath } from '../utils/runtimeBasePath';
 
-// For React Router navigation (preferred - automatic)
+// React Router 导航（推荐 - 自动处理）
 <Link to="/datasets">Datasets</Link>
 
-// For absolute URLs when needed
+// 需要绝对 URL 时
 <a href={resolveRuntimePath('/browse')}>Browse</a>
 ```
 
-### For API Endpoints
+### API 端点
 
 ```typescript
 import { resolveRuntimePath } from '../utils/runtimeBasePath';
 
-// Resolve API endpoints
+// 解析 API 端点
 const endpoint = resolveRuntimePath('/api/v2/graphql');
 fetch(endpoint, { ... });
 ```
 
-## Configuration
+## 配置
 
-### Server Configuration
+### 服务端配置
 
-The base path is configured in the backend Play application:
+在后端 Play 应用中配置 base path：
 
 ```hocon
 # datahub-frontend/conf/application.conf
 datahub.basePath = "/datahub"
 ```
 
-### Environment Variables
+### 环境变量
 
-For containerized deployments:
+容器化部署时：
 
 ```bash
 # Docker/Kubernetes
 DATAHUB_BASE_PATH=/datahub
 ```
 
-## Examples
+## 示例
 
-### Development
+### 开发环境
 
 ```bash
-# Serve at root
-yarn start  # Available at http://localhost:3000/
+# 以根路径提供服务
+yarn start  # 访问 http://localhost:3000/
 
-# Serve at subpath
-yarn preview --base /datahub  # Available at http://localhost:3000/datahub/
+# 以子路径提供服务
+yarn preview --base /datahub  # 访问 http://localhost:3000/datahub/
 ```
 
-### Production Deployment
+### 生产部署
 
-**At Root Path:**
+**部署在根路径：**
 
 ```bash
 DATAHUB_BASE_PATH="" docker run datahub-frontend
-# Accessible at: https://datahub.company.com/
+# 访问：https://datahub.company.com/
 ```
 
-or unset
+或取消设置（unset）：
 
 ```
 unset DATAHUB_BASE_PATH
 docker run datahub-frontend
 ```
 
-**At Subpath:**
+**部署在子路径：**
 
 ```bash
 DATAHUB_BASE_PATH=/datahub docker run datahub-frontend
-# Accessible at: https://company.com/datahub/
+# 访问：https://company.com/datahub/
 ```
 
-## Browser Support
+## 浏览器支持
 
-The implementation uses standard HTML `<base>` tags and modern JavaScript features:
+该实现使用标准 HTML `<base>` 标签与现代 JavaScript 特性：
 
-- All modern browsers (Chrome 60+, Firefox 60+, Safari 12+, Edge 79+)
-- Progressive enhancement with fallback detection
+- 所有现代浏览器（Chrome 60+、Firefox 60+、Safari 12+、Edge 79+）
+- 通过回退检测实现渐进增强
 
-## Troubleshooting
+## 故障排查
 
-### Assets Not Loading
+### 资源无法加载
 
-1. Check browser console for 404 errors
-2. Verify `window.__DATAHUB_BASE_PATH__` is set correctly
-3. Ensure all asset references use `resolveRuntimePath()`
+1. 检查浏览器控制台是否有 404
+2. 确认 `window.__DATAHUB_BASE_PATH__` 是否正确设置
+3. 确保所有资源引用都使用 `resolveRuntimePath()`
 
-### Incorrect Redirects
+### 重定向不正确
 
-1. Check that authentication endpoints use resolved paths
-2. Verify React Router basename configuration
-3. Test config endpoint accessibility
+1. 检查认证相关端点是否使用了解析后的路径
+2. 确认 React Router 的 basename 配置
+3. 验证配置端点是否可访问
 
-### Development Issues
+### 开发环境问题
 
 ```bash
-# Clear cache and rebuild
+# 清理缓存并重新构建
 yarn clean
 yarn build
 
-# Check base path detection
+# 检查 base path 检测结果
 console.log(window.__DATAHUB_BASE_PATH__);
 ```
 
-## Implementation Details
+## 实现细节
 
-- **HTML Template**: `datahub-frontend/app/views/index.scala.html`
-- **Runtime Utility**: `src/utils/runtimeBasePath.ts`
-- **Asset Resolution**: All `src/` files using `resolveRuntimePath()`
-- **Server Handler**: `datahub-frontend/app/controllers/Application.java`
+- **HTML 模板**：`datahub-frontend/app/views/index.scala.html`
+- **运行时工具**：`src/utils/runtimeBasePath.ts`
+- **资源解析**：所有 `src/` 文件通过 `resolveRuntimePath()` 使用
+- **服务端处理器**：`datahub-frontend/app/controllers/Application.java`
 
-The system automatically handles:
+该机制会自动处理：
 
-- Favicon and manifest paths
-- Main application JS/CSS assets
-- Platform logos and theme assets
-- API endpoint resolution
-- Authentication redirects
+- favicon 与 manifest 路径
+- 主应用 JS/CSS 资源路径
+- 平台 logo 与主题资源路径
+- API 端点解析
+- 认证重定向
